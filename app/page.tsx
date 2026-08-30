@@ -1,47 +1,124 @@
-export default function Page() {
+'use client'
+
+import { useMemo, useState } from 'react'
+import {
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  Bot,
+  Check,
+  ChevronRight,
+  CircleHelp,
+  ClipboardCheck,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  MessageSquare,
+  PenLine,
+  Plus,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Upload,
+  Users,
+  X,
+} from 'lucide-react'
+
+type Role = 'official' | 'trainer' | 'admin'
+type View = 'overview' | 'assessment' | 'learning' | 'generator' | 'analytics' | 'users'
+
+type Competency = { name: string; score: number; target: number; color: string }
+
+const initialCompetencies: Competency[] = [
+  { name: 'Data Quality & Validation', score: 68, target: 85, color: 'blue' },
+  { name: 'Statistical Analysis', score: 54, target: 80, color: 'teal' },
+  { name: 'Data Communication', score: 77, target: 82, color: 'orange' },
+  { name: 'Digital Tools', score: 42, target: 75, color: 'purple' },
+  { name: 'Official Statistics Ethics', score: 88, target: 90, color: 'green' },
+]
+
+const courses = [
+  { title: 'Data Validation in Official Statistics', provider: 'iGOT Karmayogi', level: 'Intermediate', hours: '3h 20m', score: 92, tag: 'Recommended', icon: ClipboardCheck },
+  { title: 'R for Statistical Computing', provider: 'National Statistical Systems Academy', level: 'Foundational', hours: '8h 45m', score: 86, tag: 'Build this skill', icon: BarChart3 },
+  { title: 'Communicating Data with Clarity', provider: 'iGOT Karmayogi', level: 'Intermediate', hours: '2h 15m', score: 79, tag: 'Continue learning', icon: MessageSquare },
+]
+
+const users = [
+  { name: 'Ananya Sharma', dept: 'Economic Statistics', role: 'Statistical Officer', readiness: 78, status: 'On track' },
+  { name: 'Ravi Menon', dept: 'Social Statistics', role: 'Senior Investigator', readiness: 61, status: 'Needs support' },
+  { name: 'Meera Iyer', dept: 'National Accounts', role: 'Deputy Director', readiness: 88, status: 'On track' },
+  { name: 'Arjun Rao', dept: 'Data Science Unit', role: 'Data Analyst', readiness: 46, status: 'At risk' },
+]
+
+function getGreeting(role: Role) {
+  return role === 'official' ? 'Good morning, Ananya' : role === 'trainer' ? 'Good morning, Dr. Kapoor' : 'Good morning, Administrator'
+}
+
+function App() {
+  const [role, setRole] = useState<Role | null>(null)
+  const [view, setView] = useState<View>('overview')
+  const [mobileNav, setMobileNav] = useState(false)
+  const [competencies, setCompetencies] = useState(initialCompetencies)
+  const [completed, setCompleted] = useState<string[]>([])
+  const [questionCount, setQuestionCount] = useState('5')
+  const [generated, setGenerated] = useState(false)
+  const [published, setPublished] = useState(false)
+  const [assistantOpen, setAssistantOpen] = useState(false)
+
+  const overall = useMemo(() => Math.round(competencies.reduce((sum, item) => sum + item.score, 0) / competencies.length), [competencies])
+
+  if (!role) return <Login onSelect={(selected) => { setRole(selected); setView('overview') }} />
+
+  const navItems: { id: View; label: string; icon: typeof LayoutDashboard }[] = role === 'official'
+    ? [{ id: 'overview', label: 'My dashboard', icon: LayoutDashboard }, { id: 'assessment', label: 'Assessment', icon: ClipboardCheck }, { id: 'learning', label: 'Learning path', icon: BookOpen }]
+    : role === 'trainer'
+      ? [{ id: 'overview', label: 'Trainer overview', icon: LayoutDashboard }, { id: 'generator', label: 'Question generator', icon: Sparkles }, { id: 'learning', label: 'Assessments', icon: ClipboardCheck }]
+      : [{ id: 'overview', label: 'Command center', icon: LayoutDashboard }, { id: 'analytics', label: 'Workforce analytics', icon: BarChart3 }, { id: 'users', label: 'Users & competencies', icon: Users }]
+
   return (
-    <main
-      style={{
-        colorScheme: 'light dark',
-        position: 'relative',
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'light-dark(#fff, #000)',
-        color: 'light-dark(#000, #fff)',
-      }}
-    >
-      <svg
-        aria-hidden="true"
-        style={{ width: 80, height: 80 }}
-        width={80}
-        height={80}
-        fill="none"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-        stroke="currentColor"
-        strokeWidth="0.5"
-      >
-        <path
-          d="M14.2 14.2H17V6.9375C17 4.76288 15.2371 3 13.0625 3H5.8V5.8M14.2 14.2V7.79063L7.79062 14.2H14.2ZM14.2 14.2V17H6.9375C4.76288 17 3 15.2371 3 13.0625V5.8H5.8M5.8 5.8V12.2313L12.2313 5.8H5.8Z"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <p
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 'calc(50% + 56px)',
-          transform: 'translateX(-50%)',
-          whiteSpace: 'nowrap',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'light-dark(#71717a, #a1a1aa)',
-        }}
-      >
-        Your v0 generation will show here.
-      </p>
-    </main>
+    <div className="app-shell">
+      <aside className={`sidebar ${mobileNav ? 'sidebar-open' : ''}`}>
+        <div className="brand"><div className="brand-mark"><ShieldCheck size={19} /></div><div><strong>StatSkill</strong><span>AI competency intelligence</span></div></div>
+        <div className="workspace-label">WORKSPACE</div>
+        <nav className="nav-list" aria-label="Primary navigation">
+          {navItems.map((item) => { const Icon = item.icon; return <button key={item.id} className={`nav-item ${view === item.id ? 'active' : ''}`} onClick={() => { setView(item.id); setMobileNav(false) }}><Icon size={18} /><span>{item.label}</span>{view === item.id && <ChevronRight size={15} className="nav-arrow" />}</button> })}
+        </nav>
+        <div className="sidebar-footer"><div className="demo-card"><span className="demo-dot" /> Demo environment <small>Using sample data</small></div><button className="nav-item" onClick={() => setRole(null)}><LogOut size={17} /><span>Sign out</span></button></div>
+      </aside>
+      <section className="main-area">
+        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Toggle navigation"><Menu size={21} /></button><div className="crumb">{role === 'official' ? 'Official workspace' : role === 'trainer' ? 'Trainer workspace' : 'Administrator workspace'} <span>/</span> {navItems.find((item) => item.id === view)?.label}</div><div className="top-actions"><button className="icon-button" aria-label="Search"><Search size={18} /></button><div className="profile"><div className="avatar">{role === 'official' ? 'AS' : role === 'trainer' ? 'DK' : 'AD'}</div><div className="profile-copy"><strong>{role === 'official' ? 'Ananya Sharma' : role === 'trainer' ? 'Dr. Kavita Kapoor' : 'Admin Account'}</strong><span>{role === 'official' ? 'Statistical Officer' : role === 'trainer' ? 'Senior Trainer' : 'National Statistics Office'}</span></div></div></div></header>
+        <main className="content">{view === 'overview' && <Overview role={role} overall={overall} competencies={competencies} completed={completed} setView={setView} />} {view === 'assessment' && <Assessment competencies={competencies} setCompetencies={setCompetencies} setView={setView} />} {view === 'learning' && <Learning completed={completed} setCompleted={setCompleted} role={role} />} {view === 'generator' && <Generator questionCount={questionCount} setQuestionCount={setQuestionCount} generated={generated} setGenerated={setGenerated} published={published} setPublished={setPublished} />} {view === 'analytics' && <AnalyticsView />} {view === 'users' && <UsersView />}</main>
+      </section>
+      <button className="assistant-fab" onClick={() => setAssistantOpen(!assistantOpen)} aria-label="Open StatSkill AI assistant"><Bot size={20} /></button>
+      {assistantOpen && <div className="assistant-panel"><div className="assistant-head"><div><strong>StatSkill AI</strong><span>Always-on learning guide</span></div><button onClick={() => setAssistantOpen(false)} aria-label="Close assistant"><X size={17} /></button></div><div className="assistant-body"><div className="bot-bubble">I can help explain your skill gaps, find relevant learning, or prepare you for an assessment.</div><button className="suggestion">Why is R recommended for me? <ArrowRight size={14} /></button><button className="suggestion">How is my readiness score calculated? <ArrowRight size={14} /></button></div></div>}
+    </div>
   )
 }
+
+function Login({ onSelect }: { onSelect: (role: Role) => void }) { return <main className="login-page"><div className="login-brand"><div className="brand-mark"><ShieldCheck size={21} /></div><span>StatSkill <b>AI</b></span></div><div className="login-grid"><div className="login-intro"><p className="eyebrow">NATIONAL STATISTICS CAPABILITY PLATFORM</p><h1>Build capability.<br /><em>Strengthen insight.</em></h1><p className="login-subtitle">A competency intelligence platform for India&apos;s official statistics workforce.</p><div className="intro-points"><span><Check size={15} /> Evidence-based skill mapping</span><span><Check size={15} /> Explainable recommendations</span><span><Check size={15} /> Workforce readiness insights</span></div></div><div className="login-card"><div className="card-kicker">DEMO ACCESS</div><h2>Welcome to StatSkill AI</h2><p>Choose a role to explore the prototype experience.</p><div className="role-options"><button onClick={() => onSelect('official')}><div className="role-icon blue"><Target size={18} /></div><span><strong>Government Official</strong><small>Assess skills and grow your career</small></span><ArrowRight size={17} /></button><button onClick={() => onSelect('trainer')}><div className="role-icon teal"><PenLine size={18} /></div><span><strong>Trainer / Content Creator</strong><small>Create competency assessments</small></span><ArrowRight size={17} /></button><button onClick={() => onSelect('admin')}><div className="role-icon orange"><BarChart3 size={18} /></div><span><strong>Administrator</strong><small>Monitor workforce readiness</small></span><ArrowRight size={17} /></button></div><div className="login-note"><ShieldCheck size={15} /> Demo mode — no credentials required</div></div></div><div className="login-footer">Built for the future of official statistics <span>•</span> v0 prototype</div></main> }
+
+function PageHeader({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: React.ReactNode }) { return <div className="page-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-description">{description}</p></div>{action}</div> }
+
+function Overview({ role, overall, competencies, completed, setView }: { role: Role; overall: number; competencies: Competency[]; completed: string[]; setView: (v: View) => void }) { if (role === 'trainer') return <TrainerOverview setView={setView} />; if (role === 'admin') return <AdminOverview setView={setView} />; return <><PageHeader eyebrow="OFFICIAL DASHBOARD" title={getGreeting(role)} description="Your capability journey, personalized by StatSkill AI." action={<button className="primary-button" onClick={() => setView('assessment')}><ClipboardCheck size={16} /> Take assessment</button>} /><div className="metric-grid"><Metric label="Overall readiness" value={`${overall}%`} delta="+6% this quarter" icon={Target} tone="blue" /><Metric label="Learning progress" value="34%" delta="2 courses in progress" icon={BookOpen} tone="teal" /><Metric label="Competencies tracked" value="12" delta="5 priority skills" icon={TrendingUp} tone="orange" /></div><div className="dashboard-grid"><section className="panel competency-panel"><div className="panel-head"><div><h2>My competency profile</h2><p>Compared to the role benchmark</p></div><button className="text-button" onClick={() => setView('assessment')}>View details <ArrowRight size={14} /></button></div><div className="competency-list">{competencies.map((item) => <div className="competency-row" key={item.name}><div className="competency-name"><span className={`mini-dot ${item.color}`} />{item.name}</div><div className="bar-track"><span className={`bar-fill ${item.color}`} style={{ width: `${item.score}%` }} /></div><strong>{item.score}%</strong><small>Target {item.target}%</small></div>)}</div></section><section className="panel recommendation-panel"><div className="panel-head"><div><h2>Recommended for you</h2><p>Matched to your priority skill gaps</p></div><Sparkles size={19} className="sparkle" /></div>{courses.slice(0, 2).map((course) => <CourseRow course={course} key={course.title} completed={completed.includes(course.title)} />)}</section></div><section className="insight-strip"><div className="insight-icon"><Bot size={20} /></div><div><strong>StatSkill AI insight</strong><p>Your strongest opportunity is <b>Digital Tools</b>. Learners who complete the R foundations path improve their data workflow readiness by an average of 23%.</p></div><button className="text-button" onClick={() => setView('learning')}>See learning path <ArrowRight size={14} /></button></section></> }
+
+function Metric({ label, value, delta, icon: Icon, tone }: { label: string; value: string; delta: string; icon: typeof Target; tone: string }) { return <div className="metric-card"><div className={`metric-icon ${tone}`}><Icon size={18} /></div><span>{label}</span><strong>{value}</strong><small>{delta}</small></div> }
+function CourseRow({ course, completed, onComplete }: { course: typeof courses[0]; completed: boolean; onComplete?: () => void }) { const Icon = course.icon; return <div className="course-row"><div className="course-icon"><Icon size={18} /></div><div className="course-copy"><strong>{course.title}</strong><span>{course.provider} <i>•</i> {course.level} <i>•</i> {course.hours}</span></div><div className="course-score"><span>{course.score}% match</span>{onComplete ? <button className={completed ? 'done-button' : 'small-button'} onClick={onComplete}>{completed ? <><Check size={13} /> Completed</> : 'Start'}</button> : <small>{course.tag}</small>}</div></div> }
+
+function Assessment({ competencies, setCompetencies, setView }: { competencies: Competency[]; setCompetencies: React.Dispatch<React.SetStateAction<Competency[]>>; setView: (v: View) => void }) { const [selected, setSelected] = useState<Record<string, number>>({}); const submitted = Object.keys(selected).length === competencies.length; return <><PageHeader eyebrow="COMPETENCY ASSESSMENT" title="Understand your capability profile" description="Rate your confidence across core competencies. Your responses power personalized learning recommendations." action={<span className="step-label">Step 1 of 2 <span className="step-line" /></span>} /><section className="panel assessment-card"><div className="assessment-intro"><div className="assessment-number">01</div><div><h2>Self-assessment</h2><p>How confident are you in applying each competency in your current role?</p></div></div><div className="assessment-items">{competencies.map((item) => <div className="assessment-item" key={item.name}><div><strong>{item.name}</strong><small>Current profile: {item.score}%</small></div><div className="rating-options">{[1, 2, 3, 4, 5].map((rating) => <button key={rating} className={selected[item.name] === rating ? 'rating selected' : 'rating'} onClick={() => setSelected((prev) => ({ ...prev, [item.name]: rating }))} aria-label={`${rating} out of 5`}>{rating}</button>)}</div></div>)}</div><div className="assessment-foot"><span><CircleHelp size={15} /> There are no wrong answers — this is a baseline for your growth.</span><button className="primary-button" disabled={!submitted} onClick={() => { setCompetencies((prev) => prev.map((item) => ({ ...item, score: Math.min(96, item.score + (selected[item.name] || 0) * 2) }))); setView('learning') }}>Save and see recommendations <ArrowRight size={16} /></button></div></section></> }
+
+function Learning({ completed, setCompleted, role }: { completed: string[]; setCompleted: React.Dispatch<React.SetStateAction<string[]>>; role: Role }) { return <><PageHeader eyebrow={role === 'official' ? 'MY LEARNING PATH' : 'ASSESSMENT LIBRARY'} title={role === 'official' ? 'A clear path to your next capability' : 'Published assessments'} description={role === 'official' ? 'Three focused learning experiences selected from your skill profile.' : 'Monitor the assessments currently available to your workforce.'} action={role === 'official' ? <span className="path-status"><span className="status-dot" /> Path active</span> : <button className="primary-button"><Plus size={16} /> New assessment</button>} />{role === 'official' && <div className="path-progress panel"><div><span>Path progress</span><strong>{completed.length} of 3 courses completed</strong></div><div className="large-progress"><span style={{ width: `${(completed.length / 3) * 100}%` }} /></div><small>Keep going — your next recommended course is ready.</small></div>}<div className="learning-list">{courses.map((course, index) => <div className={`panel learning-card ${completed.includes(course.title) ? 'completed-card' : ''}`} key={course.title}><div className="course-order">0{index + 1}</div><CourseRow course={course} completed={completed.includes(course.title)} onComplete={role === 'official' ? () => setCompleted((prev) => prev.includes(course.title) ? prev : [...prev, course.title]) : undefined} /><div className="course-description">Build practical confidence with guided exercises, official statistics case studies, and a knowledge check.</div></div>)}</div></> }
+
+function TrainerOverview({ setView }: { setView: (v: View) => void }) { return <><PageHeader eyebrow="TRAINER WORKSPACE" title={getGreeting('trainer')} description="Create assessments that reflect the capabilities your learners need." action={<button className="primary-button" onClick={() => setView('generator')}><Sparkles size={16} /> Generate questions</button>} /><div className="metric-grid"><Metric label="Assessments published" value="18" delta="+4 this month" icon={ClipboardCheck} tone="blue" /><Metric label="Learners reached" value="426" delta="Across 7 departments" icon={Users} tone="teal" /><Metric label="Avg. pass rate" value="76%" delta="+8% vs last quarter" icon={TrendingUp} tone="orange" /></div><div className="dashboard-grid"><section className="panel"><div className="panel-head"><div><h2>Recent assessments</h2><p>Activity across your content library</p></div><button className="text-button">View all <ArrowRight size={14} /></button></div><div className="table-list"><div className="table-head"><span>Assessment</span><span>Responses</span><span>Pass rate</span></div>{['Data Quality Fundamentals', 'Statistical Ethics in Practice', 'R for Official Statistics'].map((name, index) => <div className="table-row" key={name}><strong>{name}</strong><span>{84 + index * 31}</span><span className="positive">{82 - index * 4}%</span></div>)}</div></section><section className="panel callout-panel"><div className="callout-icon"><Sparkles size={20} /></div><h2>AI question generator</h2><p>Upload a document and create quality-checked MCQs mapped to competency levels.</p><button className="secondary-button" onClick={() => setView('generator')}>Open generator <ArrowRight size={15} /></button></section></div></> }
+
+function Generator({ questionCount, setQuestionCount, generated, setGenerated, published, setPublished }: { questionCount: string; setQuestionCount: (v: string) => void; generated: boolean; setGenerated: (v: boolean) => void; published: boolean; setPublished: (v: boolean) => void }) { return <><PageHeader eyebrow="AI QUESTION GENERATOR" title="Turn knowledge into assessment" description="Create explainable, competency-mapped questions from your training material." action={<span className="provider-pill"><span className="status-dot" /> Mock iGOT provider connected</span>} /><div className="generator-grid"><section className="panel generator-form"><div className="panel-head"><div><h2>Assessment setup</h2><p>Tell StatSkill AI what to generate.</p></div><Sparkles size={18} className="sparkle" /></div><label>Source material<div className="upload-box"><Upload size={21} /><strong>Drop a document here</strong><span>PDF, DOCX or TXT up to 10MB</span><button className="small-button">Browse files</button></div></label><label>Competency focus<select defaultValue="Data Quality & Validation"><option>Data Quality & Validation</option><option>Statistical Analysis</option><option>Official Statistics Ethics</option></select></label><div className="form-split"><label>Difficulty<select defaultValue="Intermediate"><option>Foundational</option><option>Intermediate</option><option>Advanced</option></select></label><label>Questions<select value={questionCount} onChange={(event) => setQuestionCount(event.target.value)}><option>5</option><option>10</option><option>15</option></select></label></div><button className="primary-button full-button" onClick={() => setGenerated(true)}><Sparkles size={16} /> {generated ? 'Regenerate questions' : 'Generate questions'}</button><div className="fallback-note"><ShieldCheck size={15} /><span>Using demo extraction fallback. Connect iGOT to use live training content.</span></div></section><section className="panel generated-panel"><div className="panel-head"><div><h2>{generated ? `${questionCount} questions generated` : 'Your questions will appear here'}</h2><p>{generated ? 'Review, edit, and publish when ready.' : 'AI-generated questions are mapped to your selected competency.'}</p></div>{generated && <span className="badge success"><Check size={13} /> Ready for review</span>}</div>{generated ? <div className="question-list">{Array.from({ length: Number(questionCount) }, (_, index) => <div className="question-item" key={index}><div className="question-top"><span>Q{index + 1}</span><small>Intermediate <i>•</i> Data Quality</small><button aria-label="Edit question"><PenLine size={15} /></button></div><strong>{['Which practice most directly improves the reliability of an official dataset?', 'What is the purpose of a validation rule in data processing?', 'Which signal should prompt an analyst to investigate a source record?', 'Why should metadata be reviewed alongside statistical outputs?', 'What is the best first step when a quality check fails?'][index % 5]}</strong><div className="answers"><span>A. Review the source and validation criteria</span><span>B. Remove the observation immediately</span></div></div>)}</div> : <div className="empty-generator"><FileText size={30} /><strong>No questions yet</strong><span>Upload source material and configure the assessment to begin.</span></div>}{generated && <div className="generated-foot"><button className="secondary-button">Save draft</button><button className="primary-button" onClick={() => setPublished(true)}>{published ? <><Check size={16} /> Published</> : <>Publish assessment <ArrowRight size={16} /></>}</button></div>}</section></div></> }
+
+function AdminOverview({ setView }: { setView: (v: View) => void }) { return <><PageHeader eyebrow="NATIONAL CAPABILITY COMMAND CENTER" title={getGreeting('admin')} description="A live view of workforce readiness across the statistical system." action={<button className="secondary-button" onClick={() => setView('analytics')}><BarChart3 size={16} /> Open analytics</button>} /><div className="metric-grid"><Metric label="Workforce readiness" value="71%" delta="+5.4% this quarter" icon={Target} tone="blue" /><Metric label="Active learners" value="1,248" delta="68% of workforce" icon={Users} tone="teal" /><Metric label="Priority skill gaps" value="09" delta="Across 12 departments" icon={TrendingUp} tone="orange" /><Metric label="Courses completed" value="3,842" delta="+18% this quarter" icon={BookOpen} tone="purple" /></div><div className="dashboard-grid"><section className="panel chart-panel"><div className="panel-head"><div><h2>Readiness trend</h2><p>Average workforce competency score</p></div><span className="chart-label"><span className="status-dot" /> Actual <span className="forecast-dot" /> Forecast</span></div><div className="chart"><div className="chart-y"><span>90</span><span>75</span><span>60</span><span>45</span></div><div className="chart-area"><div className="grid-lines" /> <svg viewBox="0 0 600 180" preserveAspectRatio="none" aria-label="Readiness trend chart"><polyline points="0,145 100,132 200,136 300,104 400,92 500,72 600,58" fill="none" stroke="var(--primary)" strokeWidth="3" /><polyline points="600,58 650,47 700,36" fill="none" stroke="var(--orange)" strokeWidth="3" strokeDasharray="7 6" /></svg><div className="chart-months"><span>Jan</span><span>Mar</span><span>May</span><span>Jul</span><span>Sep</span><span>Nov</span></div></div></div></section><section className="panel"><div className="panel-head"><div><h2>Department gaps</h2><p>Highest priority interventions</p></div><button className="text-button" onClick={() => setView('analytics')}>Details <ArrowRight size={14} /></button></div>{[['Data Science Unit', 48], ['Field Operations', 56], ['Economic Statistics', 63], ['Social Statistics', 69]].map(([name, value]) => <div className="gap-row" key={name as string}><span>{name}</span><div className="bar-track"><span className="bar-fill orange" style={{ width: `${value}%` }} /></div><strong>{value}%</strong></div>)}</section></div></> }
+
+function AnalyticsView() { return <><PageHeader eyebrow="WORKFORCE ANALYTICS" title="Readiness, made visible" description="Use evidence to focus capability investments where they matter most." action={<button className="secondary-button"><FileText size={16} /> Export report</button>} /><div className="analytics-grid"><div className="panel big-stat"><span>Overall readiness index</span><strong>71.4%</strong><div className="stat-trend"><TrendingUp size={15} /> 5.4% from Q2</div><div className="ring-chart"><span>71</span><small>/ 100</small></div></div><div className="panel forecast-card"><div className="panel-head"><div><h2>Emerging skill signals</h2><p>Simulated forecast based on role demand</p></div><span className="badge forecast">Simulated</span></div>{[['Data storytelling', '+32% demand'], ['Python automation', '+27% demand'], ['Privacy & governance', '+21% demand']].map(([skill, demand]) => <div className="forecast-row" key={skill}><div className="forecast-swatch" /><strong>{skill}</strong><span>{demand}</span><ArrowRight size={15} /></div>)}</div></div><section className="panel department-table"><div className="panel-head"><div><h2>Department readiness</h2><p>Benchmark comparison across the organization</p></div><button className="secondary-button">Filter view</button></div><div className="table-list"><div className="table-head"><span>Department</span><span>Headcount</span><span>Readiness</span><span>Gap status</span></div>{[['Economic Statistics', '184', '78%', 'On track'], ['Social Statistics', '246', '72%', 'Watch'], ['Field Operations', '312', '56%', 'Priority'], ['Data Science Unit', '86', '48%', 'Priority']].map((row) => <div className="table-row four" key={row[0]}><strong>{row[0]}</strong><span>{row[1]}</span><span>{row[2]}</span><span className={row[3] === 'On track' ? 'positive' : 'warning'}>{row[3]}</span></div>)}</div></section></> }
+
+function UsersView() { const [query, setQuery] = useState(''); const filtered = users.filter((user) => user.name.toLowerCase().includes(query.toLowerCase()) || user.dept.toLowerCase().includes(query.toLowerCase())); return <><PageHeader eyebrow="USER & COMPETENCY DIRECTORY" title="People behind the numbers" description="Search individual competency profiles and identify where support can have the most impact." action={<button className="secondary-button"><Users size={16} /> Import users</button>} /><section className="panel user-directory"><div className="directory-tools"><div className="search-field"><Search size={16} /><input placeholder="Search by name or department" value={query} onChange={(event) => setQuery(event.target.value)} /></div><span>{filtered.length} of {users.length} users</span></div><div className="table-list"><div className="table-head user-columns"><span>Official</span><span>Department</span><span>Role</span><span>Readiness</span><span>Status</span></div>{filtered.map((user) => <div className="table-row user-columns" key={user.name}><div className="user-cell"><div className="mini-avatar">{user.name.split(' ').map((n) => n[0]).join('')}</div><strong>{user.name}</strong></div><span>{user.dept}</span><span>{user.role}</span><span><b>{user.readiness}%</b><span className="tiny-progress"><i style={{ width: `${user.readiness}%` }} /></span></span><span className={user.status === 'On track' ? 'positive' : 'warning'}>{user.status}</span></div>)}</div></section></> }
+
+export default App
