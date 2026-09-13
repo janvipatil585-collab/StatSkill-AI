@@ -1,8 +1,8 @@
 export type SkillLevel = 'Beginner' | 'Basic' | 'Intermediate' | 'Advanced' | 'Expert'
-export type Role = 'Statistical Officer' | 'Junior Statistical Officer' | 'Senior Statistical Officer' | 'Data Analyst' | 'Economist' | 'Survey Officer' | 'Research Officer' | 'IT / Data Officer' | 'Administrator' | 'Other'
+export type Role = 'Statistical Officer' | 'Junior Statistical Officer' | 'Senior Statistical Officer' | 'Senior Investigator' | 'Data Analyst' | 'Economist' | 'Survey Officer' | 'Research Officer' | 'IT / Data Officer' | 'Administrator' | 'Other'
 export type Source = 'iGOT' | 'NSSTA'
 
-export const roles: Role[] = ['Statistical Officer','Junior Statistical Officer','Senior Statistical Officer','Data Analyst','Economist','Survey Officer','Research Officer','IT / Data Officer','Administrator','Other']
+export const roles: Role[] = ['Statistical Officer','Junior Statistical Officer','Senior Statistical Officer','Senior Investigator','Data Analyst','Economist','Survey Officer','Research Officer','IT / Data Officer','Administrator','Other']
 export const experienceBands = ['0–2 years','3–5 years','6–10 years','10+ years']
 export const skills = ['Python','R','SQL','Statistics','Sampling','Survey Design','Data Visualization','GIS','AI/ML','Cloud Computing','Data Privacy','Cybersecurity','National Accounts','Labour Statistics','Agricultural Statistics','SDG Indicators','Data Quality','Official Statistics Ethics']
 
